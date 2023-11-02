@@ -28,7 +28,7 @@ call_user_func(
                     'list_' . $moduleName,
                     '',
                     [
-                        'List' => $moduleName,
+                        \Libeo\LboBackendShortcuts\Controller\ListController::class => $moduleName,
                     ],
                     [
                         'access' => 'user,group',
