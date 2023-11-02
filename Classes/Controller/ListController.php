@@ -2,9 +2,12 @@
 
 namespace Libeo\LboBackendShortcuts\Controller;
 
+use TYPO3\CMS\Core\Http\RedirectResponse;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\RequestInterface;
-use TYPO3\CMS\Extbase\Mvc\ResponseInterface;
+use Psr\Http\Message\ResponseInterface;
+use TYPO3\CMS\Backend\Routing\UriBuilder;
+use TYPO3\CMS\Backend\Utility\BackendUtility;
 
 /***
  *
@@ -18,14 +21,14 @@ use TYPO3\CMS\Extbase\Mvc\ResponseInterface;
  ***/
 class ListController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
 {
-    public function processRequest(RequestInterface $request, ResponseInterface $response)
+    public function processRequest(RequestInterface $request): ResponseInterface
     {
-        $tsConfig = \TYPO3\CMS\Backend\Utility\BackendUtility::getPagesTSconfig(0);
+        $tsConfig = BackendUtility::getPagesTSconfig(0);
         $modules = $tsConfig['moduleShortcutLinks.'];
         $configShortcut = $modules[$request->getControllerActionName() . '.'];
 
 
-        $uriBuilder = GeneralUtility::makeInstance(\TYPO3\CMS\Backend\Routing\UriBuilder::class);
+        $uriBuilder = GeneralUtility::makeInstance(UriBuilder::class);
         $urlParameters = [];
         foreach($configShortcut['urlParameters.'] as $name => $value) {
             $urlParameters[$name] = $value;
@@ -34,7 +37,6 @@ class ListController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
 
         $this->request = $request;
         $this->request->setDispatched(true);
-        $this->response = $response;
-        $this->redirectToUri($redirectUrl);
+        return new RedirectResponse($redirectUrl);
     }
 }
