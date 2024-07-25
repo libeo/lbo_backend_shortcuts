@@ -4,6 +4,7 @@ namespace Libeo\LboBackendShortcuts\Controller;
 
 use TYPO3\CMS\Core\Http\RedirectResponse;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Extbase\Mvc\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
@@ -19,13 +20,13 @@ use TYPO3\CMS\Backend\Utility\BackendUtility;
  *  (c) 2019 Pierre Boivin <pierre.boivin@libeo.com>, Libéo
  *
  ***/
-class ListController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
+class ListController extends ActionController
 {
     public function processRequest(RequestInterface $request): ResponseInterface
     {
         $tsConfig = BackendUtility::getPagesTSconfig(0);
         $modules = $tsConfig['moduleShortcutLinks.'];
-        $configShortcut = $modules[$request->getControllerActionName() . '.'];
+        $configShortcut = $modules[$request->getArgument('action') . '.'];
 
 
         $uriBuilder = GeneralUtility::makeInstance(UriBuilder::class);
@@ -35,8 +36,6 @@ class ListController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
         }
         $redirectUrl = (string) $uriBuilder->buildUriFromRoute($configShortcut['moduleTarget'], $urlParameters);
 
-        $this->request = $request;
-        $this->request->setDispatched(true);
         return new RedirectResponse($redirectUrl);
     }
 }
