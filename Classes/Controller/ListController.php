@@ -2,13 +2,12 @@
 
 namespace Libeo\LboBackendShortcuts\Controller;
 
+use Psr\Http\Message\ResponseInterface;
+use TYPO3\CMS\Backend\Routing\UriBuilder as BackendUriBuilder;
+use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Http\RedirectResponse;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Extbase\Mvc\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
-use TYPO3\CMS\Backend\Routing\UriBuilder;
-use TYPO3\CMS\Backend\Utility\BackendUtility;
 
 /***
  *
@@ -22,19 +21,22 @@ use TYPO3\CMS\Backend\Utility\BackendUtility;
  ***/
 class ListController extends ActionController
 {
+    public function __construct(
+        private readonly BackendUriBuilder $backendUriBuilder
+    ) {
+    }
+
     public function processRequest(RequestInterface $request): ResponseInterface
     {
         $tsConfig = BackendUtility::getPagesTSconfig(0);
         $modules = $tsConfig['moduleShortcutLinks.'];
         $configShortcut = $modules[$request->getArgument('action') . '.'];
 
-
-        $uriBuilder = GeneralUtility::makeInstance(UriBuilder::class);
         $urlParameters = [];
-        foreach($configShortcut['urlParameters.'] as $name => $value) {
+        foreach(($configShortcut['urlParameters.'] ?? []) as $name => $value) {
             $urlParameters[$name] = $value;
         }
-        $redirectUrl = (string) $uriBuilder->buildUriFromRoute($configShortcut['moduleTarget'], $urlParameters);
+        $redirectUrl = (string) $this->backendUriBuilder->buildUriFromRoute($configShortcut['moduleTarget'], $urlParameters);
 
         return new RedirectResponse($redirectUrl);
     }
