@@ -1,7 +1,7 @@
 <?php
 
 $tsConfig = \TYPO3\CMS\Backend\Utility\BackendUtility::getPagesTSconfig(0);
-$modulesTS = $tsConfig['moduleShortcutLinks.'] ?: [];
+$modulesTS = $tsConfig['moduleShortcutLinks.'] ?? [];
 $modulesConfig = [];
 
 foreach ($modulesTS as $key => $module) {
